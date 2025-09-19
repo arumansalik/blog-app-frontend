@@ -10,4 +10,8 @@ API.interceptors.request.use((req) => {
     return req;
 });
 
+//Interceptor = like a middleware for requests.
+// Before every request is sent, this function runs.
+// It checks if localStorage has a saved JWT token.
+
 export default API;
