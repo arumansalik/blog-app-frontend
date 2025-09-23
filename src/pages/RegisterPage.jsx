@@ -27,9 +27,9 @@ export default function RegisterPage() {
         <div className="flex min-h-screen">
             {/* Left Section */}
             <div className="w-1/2 bg-gradient-to-r from-purple-900 to-black flex flex-col justify-center items-center text-white">
-                <h1 className="text-3xl font-bold mb-4">Get Started with Us</h1>
+                <h1 className="text-3xl font-bold mb-4">Join the College Blog Community</h1>
                 <p className="text-gray-300 mb-8">
-                    Complete these easy steps to register your account.
+                    Share ideas, read student stories, and stay updated with campus life.
                 </p>
 
             </div>
@@ -37,7 +37,8 @@ export default function RegisterPage() {
             {/* Right Section */}
             <div className="w-1/2 flex justify-center items-center bg-white">
                 <div className="w-96">
-                    <h2 className="text-2xl font-bold mb-6">Sign Up Account</h2>
+                    <h2 className="text-2xl font-bold mb-4">Sign Up Account</h2>
+                    <h4 className="mb-4">Create an account to post articles, leave comments, and follow topics you care about.</h4>
 
                     {/* Form */}
                     <form onSubmit={handleSubmit} className="space-y-4">
