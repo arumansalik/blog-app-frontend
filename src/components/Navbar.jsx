@@ -9,7 +9,7 @@ export default function Navbar() {
         <nav className="bg-black/90 backdrop-blur-md text-white px-6 py-3 flex justify-between items-center shadow-md border-b border-gray-800">
             {/* Left: Logo */}
             <h1 className="text-2xl font-bold tracking-wide text-white">
-                Medium<span className="text-green-500">Blogs</span>
+                Campus<span className="text-green-500">Blogs</span>
             </h1>
 
             {/* Center: Navigation + Search */}
