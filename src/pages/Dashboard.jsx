@@ -1,42 +1,44 @@
-import {useContext, useEffect} from "react";
-import { AuthContext} from "../context/AuthContext";
-import Navbar from "../components/Navbar";
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
+import { Home, FileText, PlusCircle, User } from "lucide-react";
 
-export default function Dashboard() {
-
+export default function DashboardLayout({ children }) {
     const { user } = useContext(AuthContext);
 
     return (
-        <div className="min-h-screen bg-black text-white">
-            <Navbar />
-
-            <div className="max-w-5xl mx-auto px-6 py-10">
-                <h2 className="text-3xl font-bold mb-4">
-                    Welcome back, {user?.username} !
-                </h2>
-                <p className="text-gray-400 mb-8">
-                    You are successfully logged in with <span className="text-blue-400">{user?.email}</span>.
-                </p>
-
-                {/* Example Dashboard Widgets */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="bg-zinc-900 rounded-xl p-6 shadow-md hover:shadow-lg transition">
-                        <h3 className="text-xl font-semibold mb-2">Your Profile</h3>
-                        <p className="text-gray-400">Manage your account details and password.</p>
+        <div className="flex h-screen bg-zinc-950 text-white">
+            {/* Sidebar */}
+            <aside className="w-64 bg-black/90 border-r border-gray-800 p-6 hidden md:flex flex-col">
+                {/* User Info */}
+                <div className="mb-10">
+                    <div className="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center text-xl font-bold">
+                        {user?.username?.[0].toUpperCase()}
                     </div>
-
-                    <div className="bg-zinc-900 rounded-xl p-6 shadow-md hover:shadow-lg transition">
-                        <h3 className="text-xl font-semibold mb-2">Bus Tracking</h3>
-                        <p className="text-gray-400">Track your college bus in real-time.</p>
-                    </div>
-
-                    <div className="bg-zinc-900 rounded-xl p-6 shadow-md hover:shadow-lg transition">
-                        <h3 className="text-xl font-semibold mb-2">Notifications</h3>
-                        <p className="text-gray-400">Stay updated with important alerts.</p>
-                    </div>
+                    <p className="mt-2 font-semibold">{user?.username}</p>
+                    <p className="text-sm text-gray-400">{user?.email}</p>
                 </div>
-            </div>
-        </div>
-    )
-}
 
+                {/* Navigation Links */}
+                <nav className="flex flex-col gap-4 text-gray-300">
+                    <a href="/" className="flex items-center gap-2 hover:text-white">
+                        <Home size={18} /> Home
+                    </a>
+                    <a href="/blogs" className="flex items-center gap-2 hover:text-white">
+                        <FileText size={18} /> Blogs
+                    </a>
+                    <a href="/create" className="flex items-center gap-2 hover:text-white">
+                        <PlusCircle size={18} /> Create Blog
+                    </a>
+                    <a href="/profile" className="flex items-center gap-2 hover:text-white">
+                        <User size={18} /> Profile
+                    </a>
+                </nav>
+            </aside>
+
+            {/* Main Content */}
+            <main className="flex-1 p-6 overflow-y-auto">
+                {children}
+            </main>
+        </div>
+    );
+}
