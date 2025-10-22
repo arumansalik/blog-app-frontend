@@ -3,6 +3,7 @@ import RegisterPage from "./pages/RegisterPage";
 import LoginPage from "./pages/LoginPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Dashboard from "./pages/Dashboard";
+import CreatePost from "./pages/CreatePost";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
                 </ProtectedRoute>
               }
           />
+          <Route path="/create" element={<CreatePost />} />
       </Routes>
     </Router>
   );
