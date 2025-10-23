@@ -1,17 +1,21 @@
 import { Link } from "react-router-dom";
 import { Search, PenSquare, User, TrendingUp } from "lucide-react";
 
-export default function MainPage() {
+export default function Dashboard() {
     return (
-        <div className="min-h-screen bg-[#0B0B0F] text-gray-100 font-[Poppins]">
+        <div className="min-h-screen bg-[#0A0A0F] text-gray-100 font-poppins">
             {/* Navbar */}
-            <header className="border-b border-gray-800 bg-[#0E0E14] px-10 py-4 flex justify-between items-center sticky top-0 z-40">
-                <Link to="/" className="text-2xl font-bold text-white tracking-tight">
+            <header className="backdrop-blur-md bg-[#0E0E14]/70 border-b border-gray-800 px-10 py-4 flex justify-between items-center sticky top-0 z-50 shadow-lg">
+                {/* Logo */}
+                <Link
+                    to="/"
+                    className="text-2xl font-bold text-white tracking-tight hover:text-indigo-500 transition"
+                >
                     College<span className="text-indigo-500">Blog</span>
                 </Link>
 
-                {/* Search bar */}
-                <div className="flex items-center bg-[#191921] px-4 py-2 rounded-xl w-80 border border-gray-700">
+                {/* Search Bar */}
+                <div className="hidden md:flex items-center bg-[#191921] px-4 py-2 rounded-xl w-96 border border-gray-700 hover:border-indigo-500 transition-all">
                     <Search size={18} className="text-gray-400" />
                     <input
                         type="text"
@@ -24,7 +28,7 @@ export default function MainPage() {
                 <div className="flex items-center gap-6">
                     <Link
                         to="/create"
-                        className="flex items-center gap-2 text-indigo-400 hover:text-indigo-300 font-medium text-sm"
+                        className="flex items-center gap-2 text-indigo-400 hover:text-indigo-300 font-medium text-sm transition"
                     >
                         <PenSquare size={16} /> Write
                     </Link>
@@ -38,59 +42,60 @@ export default function MainPage() {
             </header>
 
             {/* Hero Section */}
-            <section className="px-10 py-16 bg-gradient-to-br from-[#0E0E14] via-[#12121A] to-[#0B0B0F]">
-                <div className="max-w-6xl mx-auto text-center">
+            <section className="px-8 md:px-12 lg:px-20 py-20 bg-gradient-to-br from-[#10101A] via-[#0C0C14] to-[#090911] text-center">
+                <div className="max-w-4xl mx-auto">
                     <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-snug">
                         Discover & Share <span className="text-indigo-500">College Stories</span>
                     </h1>
                     <p className="text-gray-400 max-w-2xl mx-auto mb-8 text-[15px]">
-                        Write, read, and explore thoughts from students, teachers, and alumni of your college.
-                        Join the community — express, inspire, and connect.
+                        Read and write blogs from your college community — students, professors,
+                        and alumni. Share your experiences, learnings, and creativity.
                     </p>
                     <Link
                         to="/create"
-                        className="inline-block px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 transition text-white font-medium"
+                        className="inline-block px-8 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 transition text-white font-semibold shadow-lg hover:scale-105 transform duration-200"
                     >
-                        Start Writing
+                        ✍️ Start Writing
                     </Link>
                 </div>
             </section>
 
-            {/* Main Blog Feed */}
-            <main className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-10 px-10 py-14">
-                {/* Left / Center - Blog Feed */}
+            {/* Blog Feed */}
+            <main className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-10 px-8 md:px-12 py-14">
+                {/* Blog Posts */}
                 <div className="lg:col-span-2 space-y-10">
-                    {[1, 2, 3, 4, 5].map((_, i) => (
+                    {[1, 2, 3, 4].map((_, i) => (
                         <div
                             key={i}
-                            className="bg-[#131319] border border-gray-800 p-8 rounded-2xl hover:border-gray-600 hover:shadow-xl hover:scale-[1.01] transition-transform duration-200"
+                            className="bg-[#131319] border border-gray-800 p-8 rounded-2xl hover:border-indigo-600 hover:shadow-indigo-500/10 transition-all duration-200"
                         >
+                            {/* Author Info */}
                             <div className="flex items-center justify-between mb-4">
                                 <div className="flex items-center gap-3">
                                     <img
-                                        src={`https://i.pravatar.cc/50?img=${i + 2}`}
+                                        src={`https://i.pravatar.cc/50?img=${i + 4}`}
                                         alt="author"
                                         className="w-10 h-10 rounded-full border border-gray-700"
                                     />
                                     <div>
                                         <h4 className="text-sm font-semibold text-white">
-                                            {["Aarav", "Sneha", "Vishnu", "Priya", "Manoj"][i]}
+                                            {["Aarav", "Sneha", "Vishnu", "Priya"][i]}
                                         </h4>
-                                        <p className="text-xs text-gray-400">2 days ago</p>
+                                        <p className="text-xs text-gray-500">2 days ago</p>
                                     </div>
                                 </div>
-                                <span className="text-[12px] px-3 py-1 bg-[#191921] border border-gray-700 rounded-lg text-gray-400">
+                                <span className="text-[12px] px-3 py-1 bg-[#1B1B24] border border-gray-700 rounded-lg text-gray-400">
                   College Life
                 </span>
                             </div>
 
-                            <h2 className="text-xl font-semibold mb-3 text-white">
+                            {/* Post Content */}
+                            <h2 className="text-xl font-semibold mb-3 text-white hover:text-indigo-400 transition">
                                 {[
-                                    "How I Managed College & Side Projects",
-                                    "Top 5 Tech Fests You Must Attend",
-                                    "Balancing Studies with Internships",
-                                    "How Our College’s Cultural Fest Changed Me",
-                                    "Why Networking Matters in Campus"
+                                    "Balancing College & Passion Projects",
+                                    "Top 5 Tech Fests You Can’t Miss",
+                                    "My Internship Journey as a Fresher",
+                                    "Cultural Fest Memories of 2025",
                                 ][i]}
                             </h2>
                             <p className="text-gray-400 text-sm mb-5 leading-relaxed">
@@ -101,7 +106,7 @@ export default function MainPage() {
                             <div className="flex justify-between items-center text-sm">
                                 <Link
                                     to={`/posts/${i}`}
-                                    className="text-indigo-400 hover:text-indigo-300 transition font-medium"
+                                    className="text-indigo-400 hover:text-indigo-300 font-medium"
                                 >
                                     Read More →
                                 </Link>
@@ -111,7 +116,7 @@ export default function MainPage() {
                     ))}
                 </div>
 
-                {/* Right - Sidebar */}
+                {/* Sidebar */}
                 <aside className="space-y-8">
                     {/* Trending */}
                     <div className="bg-[#131319] p-6 rounded-2xl border border-gray-800">
@@ -119,13 +124,13 @@ export default function MainPage() {
                             <TrendingUp size={18} /> Trending Now
                         </h3>
                         <ul className="space-y-4 text-sm text-gray-400">
-                            <li className="hover:text-indigo-400 transition cursor-pointer">
+                            <li className="hover:text-indigo-400 cursor-pointer">
                                 🔥 “Top 10 Coding Tips by Final Years”
                             </li>
-                            <li className="hover:text-indigo-400 transition cursor-pointer">
+                            <li className="hover:text-indigo-400 cursor-pointer">
                                 💡 “How to Get Internships While Studying”
                             </li>
-                            <li className="hover:text-indigo-400 transition cursor-pointer">
+                            <li className="hover:text-indigo-400 cursor-pointer">
                                 📚 “Engineering Diaries: Night Before Exams”
                             </li>
                         </ul>
@@ -135,10 +140,10 @@ export default function MainPage() {
                     <div className="bg-[#131319] p-6 rounded-2xl border border-gray-800">
                         <h3 className="text-lg font-semibold mb-5">Popular Tags</h3>
                         <div className="flex flex-wrap gap-2 text-sm">
-                            {["Tech", "Fest", "Startups", "CollegeLife", "Career", "Design"].map((tag) => (
+                            {["Tech", "Fest", "Career", "Design", "Startups", "Coding"].map((tag) => (
                                 <span
                                     key={tag}
-                                    className="px-3 py-1 bg-[#1B1B24] rounded-lg border border-gray-700 hover:border-indigo-500 cursor-pointer"
+                                    className="px-3 py-1 bg-[#1B1B24] rounded-lg border border-gray-700 hover:border-indigo-500 hover:text-indigo-400 cursor-pointer"
                                 >
                   #{tag}
                 </span>
@@ -153,7 +158,7 @@ export default function MainPage() {
                             {[1, 2, 3].map((i) => (
                                 <div key={i} className="flex items-center gap-3">
                                     <img
-                                        src={`https://i.pravatar.cc/40?img=${i + 5}`}
+                                        src={`https://i.pravatar.cc/40?img=${i + 10}`}
                                         alt="writer"
                                         className="w-9 h-9 rounded-full border border-gray-700"
                                     />
