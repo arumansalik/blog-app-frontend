@@ -25,7 +25,6 @@ export default function RegisterPage() {
 
     return (
         <div className="flex min-h-screen">
-            {/* Left Section */}
             <div className="w-1/2 bg-gradient-to-r from-purple-900 to-black flex flex-col justify-center items-center text-white">
                 <h1 className="text-3xl font-bold mb-4">Join the College Blog Community</h1>
                 <p className="text-gray-300 mb-8">
