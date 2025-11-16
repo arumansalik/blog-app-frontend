@@ -1,139 +1,181 @@
-import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useParams, Link } from "react-router-dom";
+import MarkdownPreview from "@uiw/react-markdown-preview";
+// import "@uiw/react-markdown-preview/dist/markdown.css";
+
 import API from "../api/axios";
-import { MessageSquare, Calendar, User } from "lucide-react";
+import {
+    Heart,
+    Bookmark,
+    Eye,
+    ArrowLeft,
+    ThumbsUp,
+    Share,
+} from "lucide-react";
 
 export default function SinglePost() {
     const { id } = useParams();
     const [post, setPost] = useState(null);
-    const [comment, setComment] = useState("");
-    const [comments, setComments] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [liked, setLiked] = useState(false);
+    const [bookmarked, setBookmarked] = useState(false);
 
     useEffect(() => {
-        const fetchPost = async () => {
+        async function loadPost() {
             try {
                 const { data } = await API.get(`/posts/${id}`);
                 setPost(data);
-                setComments(data.comments || []);
+                setLoading(false);
+
+                // Increment view count
+                await API.put(`/posts/${id}/view`);
+
             } catch (err) {
-                console.error("Error fetching post:", err);
+                console.error("Single post error:", err);
             }
-        };
-        fetchPost();
+        }
+
+        loadPost();
     }, [id]);
 
-    const handleAddComment = async (e) => {
-        e.preventDefault();
-        if (!comment.trim()) return;
-
-        try {
-            const { data } = await API.post(`/posts/${id}/comments`, { text: comment });
-            setComments((prev) => [data, ...prev]);
-            setComment("");
-        } catch (err) {
-            console.error("Error adding comment:", err);
-        }
-    };
-
-    if (!post) {
+    if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-[#0B0B0F] text-gray-400 font-[Poppins]">
+            <div className="min-h-screen flex justify-center items-center text-gray-300">
                 Loading post...
             </div>
         );
     }
 
-    return (
-        <div className="min-h-screen bg-[#0B0B0F] text-gray-100 font-[Poppins] px-6 py-12 md:px-16">
-            {/* Post Header */}
-            <div className="max-w-4xl mx-auto">
-                {post.cover && (
-                    <img
-                        src={post.cover}
-                        alt="cover"
-                        className="w-full rounded-2xl mb-8 border border-gray-800"
-                    />
-                )}
+    if (!post) {
+        return <p className="text-center text-red-500">Post not found</p>;
+    }
 
-                <h1 className="text-3xl md:text-4xl font-bold mb-4 leading-snug text-white">
+    return (
+        <div className="min-h-screen bg-[#0A0A0F] text-gray-100 font-poppins pb-20">
+
+            {/* Top Navigation */}
+            <div className="px-6 py-4 border-b border-gray-800 bg-[#0E0E14] flex items-center gap-4 sticky top-0 z-40">
+                <Link to="/" className="text-gray-300 hover:text-white">
+                    <ArrowLeft size={22} />
+                </Link>
+                <h1 className="text-lg font-semibold">Back to Home</h1>
+            </div>
+
+            {/* COVER IMAGE */}
+            <div className="w-full h-[350px] overflow-hidden">
+                <img
+                    src={post.cover}
+                    alt="Cover"
+                    className="w-full h-full object-cover opacity-90"
+                />
+            </div>
+
+            {/* CONTENT CONTAINER */}
+            <div className="max-w-4xl mx-auto px-6 mt-10">
+
+                {/* TITLE */}
+                <h1 className="text-4xl font-bold mb-4 text-white leading-tight">
                     {post.title}
                 </h1>
 
-                <div className="flex items-center gap-4 text-sm text-gray-400 mb-10">
-                    <div className="flex items-center gap-2">
-                        <User size={16} />
-                        <span>{post.author?.name || "Anonymous"}</span>
+                {/* AUTHOR CARD */}
+                <div className="flex items-center gap-4 mb-10">
+                    <img
+                        src={
+                            post.author?.avatar ||
+                            `https://i.pravatar.cc/60?u=${post.author?._id}`
+                        }
+                        className="w-12 h-12 rounded-full border border-gray-700"
+                    />
+                    <div>
+                        <p className="font-semibold text-white">
+                            {post.author?.username}
+                        </p>
+                        <p className="text-gray-400 text-sm">
+                            {new Date(post.createdAt).toDateString()}
+                        </p>
                     </div>
-                    <div className="flex items-center gap-2">
-                        <Calendar size={16} />
-                        <span>{new Date(post.createdAt).toLocaleDateString()}</span>
-                    </div>
-                    {post.tags?.length > 0 && (
-                        <span className="px-3 py-1 bg-[#191921] border border-gray-700 rounded-lg text-gray-400 text-xs">
-              #{post.tags.join(" #")}
-            </span>
-                    )}
                 </div>
 
-                {/* Post Content */}
-                <div
-                    className="prose prose-invert max-w-none leading-relaxed text-gray-300 text-[15px]"
-                    dangerouslySetInnerHTML={{ __html: post.content }}
+                {/* ACTION BUTTONS */}
+                <div className="flex items-center gap-6 mb-10">
+
+                    {/* Likes */}
+                    <button
+                        onClick={async () => {
+                            await API.put(`/posts/${id}/like`);
+                            setLiked((prev) => !prev);
+                        }}
+                        className="flex items-center gap-2 px-4 py-2 bg-[#161621] border border-gray-700 rounded-xl hover:border-indigo-500 transition"
+                    >
+                        <Heart className={liked ? "text-red-500" : "text-gray-300"} size={20} />
+                        <span>{post.likes?.length}</span>
+                    </button>
+
+                    {/* Bookmarks */}
+                    <button
+                        onClick={async () => {
+                            await API.put(`/posts/${id}/bookmark`);
+                            setBookmarked((prev) => !prev);
+                        }}
+                        className="flex items-center gap-2 px-4 py-2 bg-[#161621] border border-gray-700 rounded-xl hover:border-indigo-500 transition"
+                    >
+                        <Bookmark size={20} className={bookmarked ? "text-yellow-400" : "text-gray-300"} />
+                    </button>
+
+                    {/* Views */}
+                    <div className="flex items-center gap-2 px-4 py-2 bg-[#161621] border border-gray-700 rounded-xl">
+                        <Eye size={20} className="text-gray-300" />
+                        <span>{post.views}</span>
+                    </div>
+
+                    {/* Share */}
+                    <button className="flex items-center gap-2 px-4 py-2 bg-[#161621] border border-gray-700 rounded-xl hover:border-indigo-500 transition">
+                        <Share size={20} />
+                    </button>
+
+                </div>
+
+                {/* MARKDOWN CONTENT */}
+                <MarkdownPreview
+                    source={post.content}
+                    className="bg-transparent p-4 rounded-xl prose prose-invert max-w-none"
+                    style={{
+                        backgroundColor: "transparent",
+                        color: "white",
+                        fontSize: "18px",
+                        lineHeight: "1.8",
+                    }}
                 />
 
-                {/* Comment Section */}
-                <section className="mt-16">
-                    <h2 className="text-xl font-semibold flex items-center gap-2 mb-6">
-                        <MessageSquare size={18} /> Comments ({comments.length})
-                    </h2>
-
-                    {/* Add Comment */}
-                    <form onSubmit={handleAddComment} className="mb-8">
-            <textarea
-                className="w-full bg-[#12121A] border border-gray-800 rounded-xl p-3 text-sm text-gray-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
-                rows="3"
-                placeholder="Write a comment..."
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-            />
-                        <button
-                            type="submit"
-                            className="mt-3 px-5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-medium transition"
+                {/* TAGS */}
+                <div className="flex flex-wrap gap-3 mt-10">
+                    {post.tags.map((tag) => (
+                        <span
+                            key={tag}
+                            className="px-4 py-2 bg-[#1A1A23] border border-gray-700 rounded-full text-sm hover:border-indigo-500 cursor-pointer"
                         >
-                            Post Comment
-                        </button>
-                    </form>
+              #{tag}
+            </span>
+                    ))}
+                </div>
 
-                    {/* Comments List */}
-                    <div className="space-y-6">
-                        {comments.length > 0 ? (
-                            comments.map((c, i) => (
-                                <div
-                                    key={i}
-                                    className="border border-gray-800 bg-[#131319] p-4 rounded-xl"
-                                >
-                                    <div className="flex items-center gap-3 mb-2">
-                                        <img
-                                            src={`https://i.pravatar.cc/35?img=${i + 10}`}
-                                            alt="avatar"
-                                            className="w-8 h-8 rounded-full border border-gray-700"
-                                        />
-                                        <h4 className="text-sm font-semibold text-white">
-                                            {c.author?.name || "Student"}
-                                        </h4>
-                                        <span className="text-xs text-gray-500 ml-auto">
-                      {new Date(c.createdAt).toLocaleDateString()}
-                    </span>
-                                    </div>
-                                    <p className="text-gray-400 text-sm">{c.text}</p>
-                                </div>
-                            ))
-                        ) : (
-                            <p className="text-gray-500 text-sm">No comments yet. Be the first to comment!</p>
-                        )}
-                    </div>
-                </section>
+                {/* COMMENTS SECTION */}
+                <div className="mt-20 bg-[#10101A] border border-gray-800 p-6 rounded-2xl">
+                    <h3 className="text-xl font-semibold mb-4">💬 Comments</h3>
+
+                    <textarea
+                        placeholder="Write a comment..."
+                        className="w-full bg-[#1A1A23] p-4 border border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500"
+                    ></textarea>
+
+                    <button className="mt-3 px-6 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-xl">
+                        Post Comment
+                    </button>
+                </div>
+
             </div>
+
         </div>
     );
 }
