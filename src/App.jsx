@@ -5,6 +5,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Dashboard from "./pages/Dashboard";
 import CreatePost from "./pages/CreatePost";
 import SinglePost from "./pages/SinglePost";
+import ProfilePage from "./pages/ProfilePage";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
           />
           <Route path="/create" element={<CreatePost />} />
           <Route path="/posts/:id" element={<SinglePost />} />
+          <Route path="/profile/:username" element={<ProfilePage />} />
       </Routes>
     </Router>
   );
