@@ -2,6 +2,8 @@ import { Link } from "react-router-dom";
 import { Search, PenSquare, User, TrendingUp } from "lucide-react";
 import { useEffect, useState } from "react";
 import API from "../api/axios";
+import { AuthContext } from "../context/AuthContext";
+import { useContext } from "react";
 
 function formatDate(date) {
     return new Date(date).toLocaleDateString();
@@ -10,6 +12,8 @@ function formatDate(date) {
 export default function Dashboard() {
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const { user } = useContext(AuthContext);
+
 
     useEffect(() => {
         async function loadPosts() {
@@ -49,9 +53,13 @@ export default function Dashboard() {
                     <Link to="/create" className="flex items-center gap-2 text-indigo-400 hover:text-indigo-300 font-medium text-sm">
                         <PenSquare size={16} /> Write
                     </Link>
-                    <Link to="/profile" className="flex items-center gap-2 text-gray-300 hover:text-white text-sm">
+                    <Link
+                        to={`/profile/${user?.username}`}
+                        className="flex items-center gap-2 text-gray-300 hover:text-white text-sm"
+                    >
                         <User size={16} /> Profile
                     </Link>
+
                 </div>
             </header>
 
