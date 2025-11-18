@@ -1,203 +1,141 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useParams, Link } from "react-router-dom";
-import { AuthContext } from "../context/AuthContext";
 import API from "../api/axios";
-import {
-    User,
-    Users,
-    Bookmark,
-    Heart,
-    Link as LinkIcon,
-    Globe,
-    Twitter,
-    Facebook,
-} from "lucide-react";
+import { AuthContext } from "../context/AuthContext";
+import { Edit, Link2, Users, PenLine } from "lucide-react";
 
-export default function ProfilePage() {
+export default function Profile() {
     const { username } = useParams();
     const { user: loggedInUser } = useContext(AuthContext);
 
     const [profile, setProfile] = useState(null);
-    const [activeTab, setActiveTab] = useState("posts");
+    const [tab, setTab] = useState("posts");
     const [loading, setLoading] = useState(true);
-    const [isFollowing, setIsFollowing] = useState(false);
 
     useEffect(() => {
         async function loadProfile() {
             try {
                 const { data } = await API.get(`/users/${username}`);
                 setProfile(data);
-
-                // Check if logged user is following
-                setIsFollowing(
-                    data.user.followers.some(
-                        (f) => f._id === loggedInUser?._id
-                    )
-                );
-
                 setLoading(false);
-            } catch (err) {
-                console.error("Profile load error:", err);
-                setLoading(false);
+            } catch (error) {
+                console.error(error);
             }
         }
-
         loadProfile();
     }, [username]);
 
-    const handleFollow = async () => {
-        try {
-            if (isFollowing) {
-                await API.put(`/users/${profile.user._id}/unfollow`);
-            } else {
-                await API.put(`/users/${profile.user._id}/follow`);
-            }
-            setIsFollowing(!isFollowing);
-        } catch (err) {
-            console.error("Follow error", err);
-        }
-    };
-
     if (loading) {
         return (
-            <div className="min-h-screen flex justify-center items-center text-gray-300">
+            <div className="text-center mt-20 text-gray-400">
                 Loading profile...
             </div>
         );
     }
 
-    if (!profile) {
-        return (
-            <p className="text-center text-red-500">User not found.</p>
-        );
-    }
-
-    const tabs = [
-        { id: "posts", label: "Posts", icon: <User size={16} /> },
-        { id: "bookmarks", label: "Bookmarks", icon: <Bookmark size={16} /> },
-        { id: "likes", label: "Liked Posts", icon: <Heart size={16} /> },
-        { id: "followers", label: "Followers", icon: <Users size={16} /> },
-        { id: "following", label: "Following", icon: <Users size={16} /> },
-    ];
-
-    const selectedTabContent = {
-        posts: profile.posts,
-        bookmarks: profile.bookmarks,
-        likes: profile.likedPosts,
-        followers: profile.user.followers,
-        following: profile.user.following,
-    };
+    const { user, posts, bookmarks, likedPosts } = profile;
 
     return (
         <div className="min-h-screen bg-[#0A0A0F] text-gray-100 font-poppins pb-20">
 
-            {/* HEADER SECTION */}
-            <div className="bg-gradient-to-r from-indigo-700 to-purple-900 h-48 relative">
-                <div className="absolute -bottom-12 left-10 flex items-center">
-                    <img
-                        src={
-                            profile.user.avatar ||
-                            `https://i.pravatar.cc/120?u=${profile.user._id}`
-                        }
-                        className="w-28 h-28 rounded-full border-4 border-[#0A0A0F]"
-                    />
-                    <div className="ml-6">
-                        <h1 className="text-3xl font-bold">
-                            {profile.user.username}
-                        </h1>
-                        <p className="text-gray-300">{profile.user.bio}</p>
+            {/* BANNER */}
+            <div className="w-full h-40 sm:h-52 bg-gradient-to-r from-indigo-600 to-purple-600"></div>
+
+            {/* PROFILE HEADER */}
+            <div className="max-w-4xl mx-auto px-5 -mt-16 flex flex-col sm:flex-row items-center sm:items-end gap-6">
+
+                {/* Avatar */}
+                <img
+                    src={user.avatar || `https://i.pravatar.cc/150?u=${user._id}`}
+                    className="w-28 h-28 sm:w-32 sm:h-32 rounded-full border-4 border-[#0A0A0F]"
+                />
+
+                {/* User Info */}
+                <div className="text-center sm:text-left w-full flex-1">
+                    <h1 className="text-2xl sm:text-3xl font-bold">{user.username}</h1>
+                    <p className="text-gray-400 mt-1 text-sm sm:text-base">{user.bio}</p>
+
+                    {/* Stats */}
+                    <div className="flex flex-wrap justify-center sm:justify-start gap-4 mt-4 text-gray-400 text-sm">
+                        <span className="flex items-center gap-2">
+                            <PenLine size={16} /> {posts.length} Posts
+                        </span>
+                        <span className="flex items-center gap-2">
+                            <Users size={16} /> {user.followers?.length} Followers
+                        </span>
+                        <span className="flex items-center gap-2">
+                            <Users size={16} /> {user.following?.length} Following
+                        </span>
+                    </div>
+
+                    {/* Social links */}
+                    <div className="flex justify-center sm:justify-start gap-5 mt-4">
+                        {user.socialLinks?.website && (
+                            <a
+                                href={user.socialLinks.website}
+                                target="_blank"
+                                className="hover:text-indigo-400 transition"
+                            >
+                                <Link2 size={20} />
+                            </a>
+                        )}
                     </div>
                 </div>
-            </div>
 
-            {/* FOLLOW BUTTON */}
-            <div className="mt-20 px-10">
-                {loggedInUser?._id !== profile.user._id && (
-                    <button
-                        onClick={handleFollow}
-                        className={`px-6 py-2 rounded-xl text-white font-semibold transition ${
-                            isFollowing
-                                ? "bg-red-600 hover:bg-red-700"
-                                : "bg-indigo-600 hover:bg-indigo-700"
-                        }`}
+                {/* Edit Button */}
+                {loggedInUser?.username === user.username && (
+                    <Link
+                        to="/edit-profile"
+                        className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-xl flex items-center gap-2 text-sm sm:text-base"
                     >
-                        {isFollowing ? "Unfollow" : "Follow"}
-                    </button>
-                )}
-            </div>
-
-            {/* SOCIAL LINKS */}
-            <div className="px-10 mt-4 flex gap-6 text-gray-400">
-                {profile.user.socialLinks?.twitter && (
-                    <a href={profile.user.socialLinks.twitter} target="_blank">
-                        <Twitter />
-                    </a>
-                )}
-                {profile.user.socialLinks?.facebook && (
-                    <a href={profile.user.socialLinks.facebook} target="_blank">
-                        <Facebook />
-                    </a>
-                )}
-                {profile.user.socialLinks?.website && (
-                    <a href={profile.user.socialLinks.website} target="_blank">
-                        <Globe />
-                    </a>
+                        <Edit size={16} /> Edit
+                    </Link>
                 )}
             </div>
 
             {/* TABS */}
-            <div className="mt-10 px-10 flex gap-6 border-b border-gray-800 pb-4">
-                {tabs.map((t) => (
-                    <button
-                        key={t.id}
-                        onClick={() => setActiveTab(t.id)}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-xl transition ${
-                            activeTab === t.id
-                                ? "bg-indigo-600 text-white"
-                                : "text-gray-400 hover:bg-[#1A1A23]"
-                        }`}
-                    >
-                        {t.icon}
-                        {t.label}
-                    </button>
-                ))}
-            </div>
-
-            {/* CONTENT LIST */}
-            <div className="mt-8 px-10 space-y-6">
-                {selectedTabContent[activeTab].length === 0 ? (
-                    <p className="text-gray-400">No content available.</p>
-                ) : activeTab === "followers" || activeTab === "following" ? (
-                    selectedTabContent[activeTab].map((u) => (
-                        <div
-                            key={u._id}
-                            className="flex items-center gap-4 bg-[#131319] p-4 rounded-xl border border-gray-800"
+            <div className="max-w-4xl mx-auto px-5 mt-10">
+                <div className="flex gap-6 border-b border-gray-800 pb-4 overflow-x-auto">
+                    {["posts", "bookmarks", "likes"].map((t) => (
+                        <button
+                            key={t}
+                            onClick={() => setTab(t)}
+                            className={`pb-1 capitalize ${
+                                tab === t ? "text-indigo-400 border-b-2 border-indigo-500" : "text-gray-400"
+                            }`}
                         >
-                            <img
-                                src={u.avatar || `https://i.pravatar.cc/40?u=${u._id}`}
-                                className="w-12 h-12 rounded-full border border-gray-700"
-                            />
-                            <p className="text-white text-lg">{u.username}</p>
-                        </div>
-                    ))
-                ) : (
-                    selectedTabContent[activeTab].map((p) => (
-                        <Link
-                            to={`/posts/${p._id}`}
-                            key={p._id}
-                            className="block bg-[#131319] border border-gray-800 p-6 rounded-2xl hover:border-indigo-500 transition"
-                        >
-                            <h2 className="text-xl font-semibold mb-2 text-white">
-                                {p.title}
-                            </h2>
+                            {t}
+                        </button>
+                    ))}
+                </div>
 
-                            <p className="text-gray-400 text-sm line-clamp-2">
-                                {p.content?.replace(/[#>*_`]/g, "").slice(0, 150)}
-                            </p>
-                        </Link>
-                    ))
-                )}
+                {/* TAB CONTENT */}
+                <div className="mt-8">
+                    {tab === "posts" &&
+                        posts.map((p) => <ProfilePostCard key={p._id} post={p} />)}
+
+                    {tab === "bookmarks" &&
+                        bookmarks.map((p) => <ProfilePostCard key={p._id} post={p} />)}
+
+                    {tab === "likes" &&
+                        likedPosts.map((p) => <ProfilePostCard key={p._id} post={p} />)}
+                </div>
             </div>
         </div>
+    );
+}
+
+/* POST CARD */
+function ProfilePostCard({ post }) {
+    return (
+        <Link
+            to={`/posts/${post._id}`}
+            className="block bg-[#131319] border border-gray-800 p-5 rounded-2xl mb-6 hover:border-indigo-600 transition"
+        >
+            <h2 className="text-lg sm:text-xl font-semibold">{post.title}</h2>
+            <p className="text-gray-400 mt-2 text-sm line-clamp-2">
+                {post.content.replace(/[#>*_`]/g, "").slice(0, 150)}...
+            </p>
+        </Link>
     );
 }
